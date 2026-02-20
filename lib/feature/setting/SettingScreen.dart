@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:movie_app/common/app_colors.dart';
+import 'package:movie_app/utils/ThemaHelper.dart';
 import 'components/theme_setting_tile.dart';
 import 'components/language_setting_tile.dart';
 
@@ -34,7 +35,7 @@ class _SettingScreenState extends State<SettingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.scaffoldBackground,
+      backgroundColor: context.colors.scaffoldBackground,
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -42,27 +43,27 @@ class _SettingScreenState extends State<SettingScreen> {
             SliverAppBar(
               collapsedHeight: 70,
               expandedHeight: 70,
-              backgroundColor: AppColors.scaffoldBackground,
+              backgroundColor: context.colors.scaffoldBackground,
               floating: false,
               pinned: true,
               leading: Container(
                 margin: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: AppColors.surface,
+                  color: context.colors.surface,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: IconButton(
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.arrow_back,
-                    color: AppColors.textPrimary,
+                    color: context.colors.textPrimary,
                   ),
                   onPressed: () => context.pop(),
                 ),
               ),
-              title: const Text(
+              title: Text(
                 'Settings',
                 style: TextStyle(
-                  color: AppColors.textPrimary,
+                  color: context.colors.textPrimary,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
@@ -97,13 +98,16 @@ class _SettingScreenState extends State<SettingScreen> {
 
                     // About Section
                     Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 10,
+                      ),
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: AppColors.surface,
+                        color: context.colors.surface,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: AppColors.cardBackground,
+                          color: context.colors.cardBackground,
                           width: 1,
                         ),
                       ),
@@ -116,7 +120,7 @@ class _SettingScreenState extends State<SettingScreen> {
                               Container(
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                  color: AppColors.cardBackground,
+                                  color: context.colors.cardBackground,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: const Icon(
@@ -126,10 +130,10 @@ class _SettingScreenState extends State<SettingScreen> {
                                 ),
                               ),
                               const SizedBox(width: 14),
-                              const Text(
+                              Text(
                                 'About',
                                 style: TextStyle(
-                                  color: AppColors.textPrimary,
+                                  color: context.colors.textPrimary,
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -141,18 +145,18 @@ class _SettingScreenState extends State<SettingScreen> {
                           // Version
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
+                            children: [
                               Text(
                                 'Version',
                                 style: TextStyle(
-                                  color: AppColors.textSecondary,
+                                  color: context.colors.textSecondary,
                                   fontSize: 14,
                                 ),
                               ),
                               Text(
                                 '1.0.0',
                                 style: TextStyle(
-                                  color: AppColors.textPrimary,
+                                  color: context.colors.textPrimary,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -162,10 +166,10 @@ class _SettingScreenState extends State<SettingScreen> {
                           const SizedBox(height: 12),
 
                           // Powered by
-                          const Text(
+                          Text(
                             'Powered by The Movie Database API',
                             style: TextStyle(
-                              color: AppColors.textSecondary,
+                              color: context.colors.textSecondary,
                               fontSize: 13,
                             ),
                           ),
@@ -186,33 +190,30 @@ class _SettingScreenState extends State<SettingScreen> {
                               gradient: const LinearGradient(
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
-                                colors: [
-                                  Color(0xFF6B21A8),
-                                  Color(0xFF1E3A8A),
-                                ],
+                                colors: [Color(0xFF6B21A8), Color(0xFF1E3A8A)],
                               ),
                               borderRadius: BorderRadius.circular(20),
                             ),
-                            child: const Icon(
+                            child:  Icon(
                               Icons.movie,
-                              color: Colors.white,
+                              color: context.colors.textPrimary,
                               size: 50,
                             ),
                           ),
                           const SizedBox(height: 16),
-                          const Text(
+                          Text(
                             'Movie',
                             style: TextStyle(
-                              color: AppColors.textPrimary,
+                              color: context.colors.textPrimary,
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           const SizedBox(height: 4),
-                          const Text(
+                          Text(
                             'Discover Amazing Films',
                             style: TextStyle(
-                              color: AppColors.textSecondary,
+                              color: context.colors.textSecondary,
                               fontSize: 14,
                             ),
                           ),

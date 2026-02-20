@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:movie_app/utils/ThemaHelper.dart';
 import '../../common/app_colors.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -25,13 +26,13 @@ class _SplashScreenState extends State<SplashScreen> {
       });
     });
 
-      // Navigate after 3 seconds
-  Future.delayed(const Duration(seconds: 2), () {
-    if (mounted) {
-      timer.cancel(); // stop animation
-      context.goNamed('movie'); // pindah ke movie
-    }
-  });
+    // Navigate after 3 seconds
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        timer.cancel(); // stop animation
+        context.goNamed('movie'); // pindah ke movie
+      }
+    });
   }
 
   @override
@@ -44,41 +45,41 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [AppColors.gradientStart, AppColors.gradientEnd],
+            colors: [context.colors.gradientStart, context.colors.gradientEnd],
           ),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Clapper board icon
-            const Icon(
+            Icon(
               Icons.movie_creation_outlined,
               size: 80,
-              color: AppColors.textPrimary,
+              color: context.colors.textPrimary,
             ),
             const SizedBox(height: 40),
 
             // Movie title
-            const Text(
+            Text(
               'Movie',
               style: TextStyle(
                 fontSize: 64,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                color: context.colors.textPrimary,
               ),
             ),
             const SizedBox(height: 16),
 
             // Subtitle
-            const Text(
+            Text(
               'Discover Amazing Films',
               style: TextStyle(
                 fontSize: 18,
-                color: AppColors.textSecondary,
+                color: context.colors.textSecondary,
                 fontWeight: FontWeight.w400,
               ),
             ),
@@ -107,8 +108,8 @@ class _SplashScreenState extends State<SplashScreen> {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: isActive
-            ? AppColors.indicatorActive
-            : AppColors.indicatorInactive,
+            ? context.colors.indicatorActive
+            : context.colors.indicatorInactive,
       ),
     );
   }

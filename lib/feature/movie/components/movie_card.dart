@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_app/common/app_colors.dart';
+import 'package:movie_app/utils/ThemaHelper.dart';
 import '../../components/rating_badge.dart';
 import '../../components/bookmark_button.dart';
 
@@ -61,8 +62,8 @@ class MovieCard extends StatelessWidget {
         const SizedBox(height: 10),
         Text(
           title,
-          style: const TextStyle(
-            color: AppColors.textPrimary,
+          style:  TextStyle(
+            color: context.colors.textPrimary,
             fontSize: 16,
             fontWeight: FontWeight.w700,
           ),
@@ -70,8 +71,8 @@ class MovieCard extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           year,
-          style: const TextStyle(
-            color: AppColors.textSecondary,
+          style:  TextStyle(
+            color: context.colors.textSecondary,
             fontSize: 13,
           ),
         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movie_app/utils/ThemaHelper.dart';
 
 class RatingBadge extends StatelessWidget {
   final double rating;
@@ -24,8 +25,8 @@ class RatingBadge extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             rating.toStringAsFixed(1),
-            style: const TextStyle(
-              color: Colors.white,
+            style:  TextStyle(
+              color: context.colors.surface,
               fontWeight: FontWeight.w600,
             ),
           ),

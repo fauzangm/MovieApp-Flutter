@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:movie_app/common/app_colors.dart';
+import 'package:movie_app/utils/ThemaHelper.dart';
 import 'components/cast_member_card.dart';
 import 'components/similar_movies_section.dart';
 import 'components/movie_poster_grid.dart';
@@ -30,7 +31,7 @@ class DetailMovieScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.scaffoldBackground,
+      backgroundColor: context.colors.scaffoldBackground,
       body: CustomScrollView(
         slivers: [
           // Custom AppBar with backdrop
@@ -38,7 +39,7 @@ class DetailMovieScreen extends StatelessWidget {
             expandedHeight: 300,
             floating: false,
             pinned: true,
-            backgroundColor: AppColors.scaffoldBackground,
+            backgroundColor: context.colors.scaffoldBackground,
             leading: Container(
               margin: const EdgeInsets.all(8),
               decoration: BoxDecoration(
@@ -46,7 +47,7 @@ class DetailMovieScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                icon:  Icon(Icons.arrow_back, color: context.colors.textPrimary),
                 onPressed: () => context.pop(),
               ),
             ),
@@ -54,7 +55,7 @@ class DetailMovieScreen extends StatelessWidget {
               Container(
                 margin: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: AppColors.bookmarkActive,
+                  color: context.colors.bookmarkActive,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: IconButton(
@@ -90,8 +91,8 @@ class DetailMovieScreen extends StatelessWidget {
                   // Movie Title
                   Text(
                     movieTitle,
-                    style: const TextStyle(
-                      color: AppColors.textPrimary,
+                    style: TextStyle(
+                      color: context.colors.textPrimary,
                       fontSize: 28,
                       fontWeight: FontWeight.w800,
                     ),
@@ -121,8 +122,8 @@ class DetailMovieScreen extends StatelessWidget {
                             const SizedBox(width: 6),
                             Text(
                               rating.toStringAsFixed(1),
-                              style: const TextStyle(
-                                color: Colors.white,
+                              style:  TextStyle(
+                                color: context.colors.surface,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
                               ),
@@ -130,8 +131,8 @@ class DetailMovieScreen extends StatelessWidget {
                             const SizedBox(width: 4),
                             Text(
                               '($ratingCount)',
-                              style: const TextStyle(
-                                color: AppColors.textSecondary,
+                              style: TextStyle(
+                                color: context.colors.textSecondary,
                                 fontSize: 12,
                               ),
                             ),
@@ -142,8 +143,8 @@ class DetailMovieScreen extends StatelessWidget {
                       // Year
                       Text(
                         year,
-                        style: const TextStyle(
-                          color: AppColors.textSecondary,
+                        style: TextStyle(
+                          color: context.colors.textSecondary,
                           fontSize: 16,
                         ),
                       ),
@@ -162,13 +163,13 @@ class DetailMovieScreen extends StatelessWidget {
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: AppColors.surface,
+                              color: context.colors.surface,
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
                               genre,
-                              style: const TextStyle(
-                                color: AppColors.textPrimary,
+                              style: TextStyle(
+                                color: context.colors.textPrimary,
                                 fontSize: 12,
                               ),
                             ),
@@ -179,10 +180,10 @@ class DetailMovieScreen extends StatelessWidget {
                   const SizedBox(height: 24),
 
                   // Overview Title
-                  const Text(
+                  Text(
                     'Overview',
                     style: TextStyle(
-                      color: AppColors.textPrimary,
+                      color: context.colors.textPrimary,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
@@ -192,8 +193,8 @@ class DetailMovieScreen extends StatelessWidget {
                   // Overview Text
                   Text(
                     overview,
-                    style: const TextStyle(
-                      color: AppColors.textSecondary,
+                    style: TextStyle(
+                      color: context.colors.textSecondary,
                       fontSize: 14,
                       height: 1.6,
                     ),
@@ -201,10 +202,10 @@ class DetailMovieScreen extends StatelessWidget {
                   const SizedBox(height: 28),
 
                   // Cast Title
-                  const Text(
+                  Text(
                     'Cast',
                     style: TextStyle(
-                      color: AppColors.textPrimary,
+                      color: context.colors.textPrimary,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
@@ -223,6 +224,7 @@ class DetailMovieScreen extends StatelessWidget {
                           name: castMember['name'],
                           role: castMember['role'],
                           imageUrl: castMember['imageUrl'],
+                          context: context,
                         );
                       },
                     ),
@@ -230,18 +232,16 @@ class DetailMovieScreen extends StatelessWidget {
                   const SizedBox(height: 32),
 
                   // Similar Movies Section
-                  const Text(
+                  Text(
                     'Similar Movies',
                     style: TextStyle(
-                      color: AppColors.textPrimary,
+                      color: context.colors.textPrimary,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 12),
-                  SimilarMoviesSection(
-                    movies: similarMovies,
-                  ),
+                  SimilarMoviesSection(movies: similarMovies),
                 ],
               ),
             ),

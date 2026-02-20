@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:movie_app/common/app_colors.dart';
+import 'package:movie_app/utils/ThemaHelper.dart';
 
 class CastMemberCard extends StatelessWidget {
   final String name;
   final String role;
   final String imageUrl;
+  final BuildContext context;
 
   const CastMemberCard({
     Key? key,
     required this.name,
     required this.role,
     required this.imageUrl,
+    required this.context,
   }) : super(key: key);
 
   @override
@@ -27,7 +30,7 @@ class CastMemberCard extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: AppColors.surface,
+                color: context.colors.surface,
                 width: 2,
               ),
             ),
@@ -37,10 +40,10 @@ class CastMemberCard extends StatelessWidget {
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return Container(
-                    color: AppColors.surface,
-                    child: const Icon(
+                    color: context.colors.surface,
+                    child: Icon(
                       Icons.person,
-                      color: AppColors.textSecondary,
+                      color: context.colors.textSecondary,
                     ),
                   );
                 },
@@ -57,8 +60,8 @@ class CastMemberCard extends StatelessWidget {
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: AppColors.textPrimary,
+              style: TextStyle(
+                color: context.colors.textPrimary,
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
               ),
@@ -73,8 +76,8 @@ class CastMemberCard extends StatelessWidget {
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: AppColors.textSecondary,
+              style: TextStyle(
+                color: context.colors.textSecondary,
                 fontSize: 11,
               ),
             ),

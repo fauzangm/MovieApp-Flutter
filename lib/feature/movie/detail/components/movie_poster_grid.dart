@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_app/common/app_colors.dart';
+import 'package:movie_app/utils/ThemaHelper.dart';
 
 class MoviePosterGrid extends StatelessWidget {
   final List<String> posterUrls;
@@ -13,7 +14,7 @@ class MoviePosterGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      color: AppColors.surface,
+      color: context.colors.surface,
       child: GridView.builder(
         padding: const EdgeInsets.all(8),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -31,10 +32,10 @@ class MoviePosterGrid extends StatelessWidget {
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
                 return Container(
-                  color: AppColors.cardBackground,
-                  child: const Icon(
+                  color: context.colors.cardBackground,
+                  child: Icon(
                     Icons.image_not_supported,
-                    color: AppColors.textSecondary,
+                    color: context.colors.textSecondary,
                   ),
                 );
               },

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:movie_app/common/app_colors.dart' show AppColors;
+import 'package:movie_app/utils/ThemaHelper.dart';
 
 class BookmarkButton extends StatelessWidget {
   final bool active;
@@ -15,13 +15,13 @@ class BookmarkButton extends StatelessWidget {
         width: 36,
         height: 36,
         decoration: BoxDecoration(
-          color: active ? AppColors.bookmarkActive : Colors.black.withOpacity(0.45),
+          color: active ? context.colors.surface : Colors.black.withOpacity(0.45),
           shape: BoxShape.circle,
         ),
         child: Icon(
           active ? Icons.bookmark : Icons.bookmark_border,
           size: 18,
-          color: active ? Colors.black : Colors.white,
+          color: active ? context.colors.bookmarkActive : context.colors.surface,
         ),
       ),
     );

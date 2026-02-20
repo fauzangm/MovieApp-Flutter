@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_app/common/app_colors.dart';
+import 'package:movie_app/utils/ThemaHelper.dart';
 
 class ThemeSettingTile extends StatefulWidget {
   final String initialTheme;
@@ -30,12 +31,9 @@ class _ThemeSettingTileState extends State<ThemeSettingTile> {
       margin: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.colors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.cardBackground,
-          width: 1,
-        ),
+        border: Border.all(color: context.colors.cardBackground, width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,7 +44,7 @@ class _ThemeSettingTileState extends State<ThemeSettingTile> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: AppColors.cardBackground,
+                  color: context.colors.cardBackground,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
@@ -59,11 +57,11 @@ class _ThemeSettingTileState extends State<ThemeSettingTile> {
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     Text(
                       'Theme',
                       style: TextStyle(
-                        color: AppColors.textPrimary,
+                        color: context.colors.textPrimary,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -72,7 +70,7 @@ class _ThemeSettingTileState extends State<ThemeSettingTile> {
                     Text(
                       'Choose your app appearance',
                       style: TextStyle(
-                        color: AppColors.textSecondary,
+                        color: context.colors.textSecondary,
                         fontSize: 13,
                       ),
                     ),
@@ -87,39 +85,24 @@ class _ThemeSettingTileState extends State<ThemeSettingTile> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14),
             decoration: BoxDecoration(
-              color: AppColors.cardBackground,
+              color: context.colors.cardBackground,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: AppColors.surface,
-                width: 1,
-              ),
+              border: Border.all(color: context.colors.surface, width: 1),
             ),
             child: DropdownButton<String>(
               value: selectedTheme,
               isExpanded: true,
               underline: const SizedBox.shrink(),
-              icon: const Icon(
+              icon: Icon(
                 Icons.keyboard_arrow_down,
-                color: AppColors.textSecondary,
+                color: context.colors.textSecondary,
               ),
-              dropdownColor: AppColors.surface,
-              style: const TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 16,
-              ),
+              dropdownColor: context.colors.surface,
+              style: TextStyle(color: context.colors.textPrimary, fontSize: 16),
               items: const [
-                DropdownMenuItem(
-                  value: 'dark',
-                  child: Text('Dark'),
-                ),
-                DropdownMenuItem(
-                  value: 'light',
-                  child: Text('Light'),
-                ),
-                DropdownMenuItem(
-                  value: 'system',
-                  child: Text('System'),
-                ),
+                DropdownMenuItem(value: 'dark', child: Text('Dark')),
+                DropdownMenuItem(value: 'light', child: Text('Light')),
+                DropdownMenuItem(value: 'system', child: Text('System')),
               ],
               onChanged: (value) {
                 if (value != null) {

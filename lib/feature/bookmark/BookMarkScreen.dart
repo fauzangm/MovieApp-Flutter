@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:movie_app/common/app_colors.dart';
+import 'package:movie_app/utils/ThemaHelper.dart';
 import '../movie/components/movie_card.dart';
 
 class BookMarkScreen extends StatefulWidget {
@@ -42,7 +43,7 @@ class _BookMarkScreenState extends State<BookMarkScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.scaffoldBackground,
+      backgroundColor: context.colors.scaffoldBackground,
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -50,27 +51,27 @@ class _BookMarkScreenState extends State<BookMarkScreen> {
             SliverAppBar(
               collapsedHeight: 70,
               expandedHeight: 70,
-              backgroundColor: AppColors.scaffoldBackground,
+              backgroundColor: context.colors.scaffoldBackground,
               floating: false,
               pinned: true,
               leading: Container(
                 margin: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: AppColors.surface,
+                  color: context.colors.surface,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: IconButton(
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.arrow_back,
-                    color: AppColors.textPrimary,
+                    color: context.colors.textPrimary,
                   ),
                   onPressed: () => context.pop(),
                 ),
               ),
-              title: const Text(
+              title: Text(
                 'Bookmarks',
                 style: TextStyle(
-                  color: AppColors.textPrimary,
+                  color: context.colors.textPrimary,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),

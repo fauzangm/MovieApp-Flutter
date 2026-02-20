@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:movie_app/common/app_colors.dart';
+import 'package:movie_app/utils/ThemaHelper.dart';
 import 'components/movie_card.dart';
 
 class MovieScreen extends StatelessWidget {
@@ -36,7 +37,7 @@ class MovieScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.scaffoldBackground,
+      backgroundColor: context.colors.scaffoldBackground,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
@@ -47,10 +48,10 @@ class MovieScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                   Text(
                     'Movie',
                     style: TextStyle(
-                      color: AppColors.textPrimary,
+                      color: context.colors.textPrimary,
                       fontSize: 28,
                       fontWeight: FontWeight.w800,
                     ),
@@ -61,15 +62,15 @@ class MovieScreen extends StatelessWidget {
                         onTap: () {
                           context.pushNamed('bookmark');
                         },
-                        child: Icon(Icons.bookmark_border, color: Colors.white)),
+                        child: Icon(Icons.bookmark_border, color: context.colors.textPrimary)),
                       SizedBox(width: 12),
-                      Icon(Icons.wb_sunny_outlined, color: Colors.white),
+                      Icon(Icons.wb_sunny_outlined, color: context.colors.textPrimary),
                       SizedBox(width: 12),
                       GestureDetector(
                         onTap: () {
                           context.pushNamed('setting');
                         },
-                        child: Icon(Icons.settings_outlined, color: Colors.white)),
+                        child: Icon(Icons.settings_outlined, color: context.colors.textPrimary)),
                     ],
                   ),
                 ],
@@ -80,15 +81,15 @@ class MovieScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
-                  color: AppColors.surface,
+                  color: context.colors.surface,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const TextField(
-                  style: TextStyle(color: Colors.white),
+                child:  TextField(
+                  style: TextStyle(color: context.colors.textPrimary),
                   decoration: InputDecoration(
-                    icon: Icon(Icons.search, color: Colors.white54),
+                    icon: Icon(Icons.search, color: context.colors.textSecondary),
                     hintText: 'Search movies...',
-                    hintStyle: TextStyle(color: Colors.white54),
+                    hintStyle: TextStyle(color: context.colors.textSecondary),
                     border: InputBorder.none,
                   ),
                 ),
@@ -98,11 +99,11 @@ class MovieScreen extends StatelessWidget {
               // Tabs
               Row(
                 children: [
-                  _buildTab('Popular', active: true),
+                  _buildTab('Popular',context, active: true),
                   const SizedBox(width: 8),
-                  _buildTab('Top Rated'),
+                  _buildTab('Top Rated',context),
                   const SizedBox(width: 8),
-                  _buildTab('Now Playing'),
+                  _buildTab('Now Playing',context),
                 ],
               ),
               const SizedBox(height: 12),
@@ -117,19 +118,19 @@ class MovieScreen extends StatelessWidget {
                         vertical: 14,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.surface,
+                        color: context.colors.surface,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
+                        children:  [
                           Text(
                             'Popularity',
-                            style: TextStyle(color: Colors.white70),
+                            style: TextStyle(color: context.colors.textSecondary),
                           ),
                           Icon(
                             Icons.keyboard_arrow_down,
-                            color: Colors.white70,
+                            color: context.colors.textSecondary,
                           ),
                         ],
                       ),
@@ -139,10 +140,10 @@ class MovieScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: AppColors.surface,
+                      color: context.colors.surface,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(Icons.tune, color: Colors.white),
+                    child:  Icon(Icons.tune, color: context.colors.textPrimary),
                   ),
                 ],
               ),
@@ -185,17 +186,17 @@ class MovieScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTab(String label, {bool active = false}) {
+  Widget _buildTab(String label, BuildContext context, {bool active = false}) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      padding:  EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
-        color: active ? AppColors.accent : AppColors.surface,
+        color: active ? context.colors.accent : context.colors.surface,
         borderRadius: BorderRadius.circular(24),
       ),
       child: Text(
         label,
         style: TextStyle(
-          color: active ? Colors.white : Colors.white70,
+          color: active ? context.colors.surface : context.colors.textSecondary,
           fontWeight: FontWeight.w600,
         ),
       ),
