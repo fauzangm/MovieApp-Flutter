@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../../common/app_colors.dart';
 
@@ -9,6 +11,26 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  int currentIndex = 0;
+  late Timer timer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
+      setState(() {
+        currentIndex = (currentIndex + 1) % 3;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,10 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              AppColors.gradientStart,
-              AppColors.gradientEnd,
-            ],
+            colors: [AppColors.gradientStart, AppColors.gradientEnd],
           ),
         ),
         child: Column(
@@ -59,13 +78,12 @@ class _SplashScreenState extends State<SplashScreen> {
             // Page indicators
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildIndicator(isActive: true),
-                const SizedBox(width: 12),
-                _buildIndicator(isActive: false),
-                const SizedBox(width: 12),
-                _buildIndicator(isActive: false),
-              ],
+              children: List.generate(3, (index) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                  child: _buildIndicator(isActive: index == currentIndex),
+                );
+              }),
             ),
           ],
         ),

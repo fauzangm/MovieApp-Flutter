@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:movie_app/feature/bookmark/BookMarkScreen.dart';
-import 'package:movie_app/feature/movie/MovieScreen.dart';
-import 'package:movie_app/feature/movie/detail/detail_movie_example.dart';
-import 'package:movie_app/feature/setting/setting_example.dart';
-import 'package:movie_app/feature/splash/SplashScreen.dart';
+import 'package:movie_app/core/router.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -14,9 +11,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      home: BookMarkScreen(),
+      routerConfig: appRouter,
     );
   }
 }
