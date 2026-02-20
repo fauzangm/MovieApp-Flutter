@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../common/app_colors.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -23,6 +24,14 @@ class _SplashScreenState extends State<SplashScreen> {
         currentIndex = (currentIndex + 1) % 3;
       });
     });
+
+      // Navigate after 3 seconds
+  Future.delayed(const Duration(seconds: 2), () {
+    if (mounted) {
+      timer.cancel(); // stop animation
+      context.goNamed('movie'); // pindah ke movie
+    }
+  });
   }
 
   @override

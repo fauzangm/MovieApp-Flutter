@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:movie_app/common/app_colors.dart';
 import 'components/cast_member_card.dart';
 import 'components/similar_movies_section.dart';
@@ -46,7 +47,7 @@ class DetailMovieScreen extends StatelessWidget {
               ),
               child: IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => context.pop(),
               ),
             ),
             actions: [

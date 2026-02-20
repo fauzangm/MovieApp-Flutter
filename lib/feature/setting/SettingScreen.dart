@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:movie_app/common/app_colors.dart';
 import 'components/theme_setting_tile.dart';
 import 'components/language_setting_tile.dart';
@@ -55,7 +56,7 @@ class _SettingScreenState extends State<SettingScreen> {
                     Icons.arrow_back,
                     color: AppColors.textPrimary,
                   ),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => context.pop(),
                 ),
               ),
               title: const Text(

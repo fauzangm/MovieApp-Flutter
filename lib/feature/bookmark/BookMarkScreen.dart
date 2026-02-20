@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:movie_app/common/app_colors.dart';
 import '../movie/components/movie_card.dart';
 
@@ -63,7 +64,7 @@ class _BookMarkScreenState extends State<BookMarkScreen> {
                     Icons.arrow_back,
                     color: AppColors.textPrimary,
                   ),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => context.pop(),
                 ),
               ),
               title: const Text(
