@@ -47,6 +47,16 @@ mixin _$ThemeStore on _ThemeStore, Store {
     return _$loadThemeAsyncAction.run(() => super.loadTheme());
   }
 
+  late final _$toggleThemeAsyncAction = AsyncAction(
+    '_ThemeStore.toggleTheme',
+    context: context,
+  );
+
+  @override
+  Future<void> toggleTheme() {
+    return _$toggleThemeAsyncAction.run(() => super.toggleTheme());
+  }
+
   @override
   String toString() {
     return '''

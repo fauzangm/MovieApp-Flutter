@@ -41,12 +41,21 @@ dependencies:
   # Routing
   go_router: ^17.0.0
 
+  #Dio
+  dio: ^5.9.1
+
+  # RxDart
+  rxdart: ^0.28.0
+
   #Shared Preferences
   shared_preferences: ^2.5.3
 
   # State Management
   mobx: ^2.6.0
   flutter_mobx: ^2.3.0
+
+  # Environment Variables
+  flutter_dotenv: ^6.0.0
 
 dev_dependencies:
   flutter_test:
@@ -66,6 +75,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  assets:
+    - .env
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

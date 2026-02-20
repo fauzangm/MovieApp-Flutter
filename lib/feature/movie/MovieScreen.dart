@@ -3,38 +3,71 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:go_router/go_router.dart';
 import 'package:movie_app/common/app_colors.dart';
 import 'package:movie_app/core/theme/theme_store_instance.dart';
+import 'package:movie_app/feature/movie/data/remote/model/MovieModel.dart';
+import 'package:movie_app/feature/movie/vm/movie_vm.dart';
 import 'package:movie_app/utils/ThemaHelper.dart';
 import 'components/movie_card.dart';
 
-class MovieScreen extends StatelessWidget {
+class MovieScreen extends StatefulWidget {
   const MovieScreen({Key? key}) : super(key: key);
 
-  final List<Map<String, dynamic>> sampleMovies = const [
-    {
-      'title': 'Stellar Odyssey',
-      'year': '2024',
-      'rating': 8.9,
-      'image': 'https://picsum.photos/300/450?random=1',
-    },
-    {
-      'title': 'Dragon Fire',
-      'year': '2024',
-      'rating': 8.5,
-      'image': 'https://picsum.photos/300/450?random=2',
-    },
-    {
-      'title': 'Neon Nights',
-      'year': '2024',
-      'rating': 8.7,
-      'image': 'https://picsum.photos/300/450?random=3',
-    },
-    {
-      'title': 'Cinema Heart',
-      'year': '2024',
-      'rating': 8.4,
-      'image': 'https://picsum.photos/300/450?random=4',
-    },
-  ];
+  @override
+  State<MovieScreen> createState() => _MovieScreenState();
+}
+
+class _MovieScreenState extends State<MovieScreen> {
+  static const String _tmdbPosterBaseUrl = 'https://image.tmdb.org/t/p/w500';
+
+  final MovieVM _vm = MovieVM();
+  final ScrollController _scrollController = ScrollController();
+
+  String _selectedType = 'popular';
+
+  @override
+  void initState() {
+    super.initState();
+    _vm.fetchMovies(_selectedType);
+
+    _scrollController.addListener(() {
+      if (!_scrollController.hasClients) return;
+      final position = _scrollController.position;
+      if (position.pixels >= position.maxScrollExtent - 300) {
+        _vm.fetchMovies(_selectedType, isLoadMore: true);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _vm.dispose();
+    super.dispose();
+  }
+
+  void _onSelectType(String type) {
+    if (_selectedType == type) return;
+    setState(() {
+      _selectedType = type;
+    });
+    if (_scrollController.hasClients) {
+      _scrollController.jumpTo(0);
+    }
+    _vm.fetchMovies(_selectedType);
+  }
+
+  String _posterUrl(Movie movie) {
+    if (movie.posterPath.isEmpty) {
+      return 'https://picsum.photos/300/450?random=${movie.id}';
+    }
+    return '$_tmdbPosterBaseUrl${movie.posterPath}';
+  }
+
+  String _year(Movie movie) {
+    final date = movie.releaseDate;
+    if (date.isEmpty) return '';
+    if (date.length >= 4) return date.substring(0, 4);
+    return date;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -123,11 +156,26 @@ class MovieScreen extends StatelessWidget {
               // Tabs
               Row(
                 children: [
-                  _buildTab('Popular', context, active: true),
+                  _buildTab(
+                    'Popular',
+                    context,
+                    active: _selectedType == 'popular',
+                    onTap: () => _onSelectType('popular'),
+                  ),
                   const SizedBox(width: 8),
-                  _buildTab('Top Rated', context),
+                  _buildTab(
+                    'Top Rated',
+                    context,
+                    active: _selectedType == 'top_rated',
+                    onTap: () => _onSelectType('top_rated'),
+                  ),
                   const SizedBox(width: 8),
-                  _buildTab('Now Playing', context),
+                  _buildTab(
+                    'Now Playing',
+                    context,
+                    active: _selectedType == 'now_playing',
+                    onTap: () => _onSelectType('now_playing'),
+                  ),
                 ],
               ),
               const SizedBox(height: 12),
@@ -177,30 +225,60 @@ class MovieScreen extends StatelessWidget {
 
               // Grid of movies
               Expanded(
-                child: GridView.builder(
-                  itemCount: sampleMovies.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 14,
-                    mainAxisSpacing: 18,
-                    childAspectRatio: 0.57,
-                  ),
-                  itemBuilder: (context, index) {
-                    final movie = sampleMovies[index];
-                    return GestureDetector(
-                      onTap: () {
-                        context.pushNamed(
-                          'detail',
-                          extra: movie, // kirim data movie
+                child: Observer(
+                  builder: (_) {
+                    return StreamBuilder<List<Movie>>(
+                      stream: _vm.movieStream,
+                      builder: (context, snapshot) {
+                        final movies = snapshot.data ?? const [];
+
+                        if (_vm.errorMessage != null && movies.isEmpty) {
+                          return Center(
+                            child: Text(
+                              _vm.errorMessage!,
+                              style: TextStyle(color: context.colors.textPrimary),
+                            ),
+                          );
+                        }
+
+                        if (_vm.isLoading && movies.isEmpty) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+
+                        return GridView.builder(
+                          controller: _scrollController,
+                          itemCount: movies.length + (_vm.isLoading ? 1 : 0),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 14,
+                            mainAxisSpacing: 18,
+                            childAspectRatio: 0.57,
+                          ),
+                          itemBuilder: (context, index) {
+                            if (index >= movies.length) {
+                              return const Center(child: CircularProgressIndicator());
+                            }
+
+                            final movie = movies[index];
+                            return GestureDetector(
+                              onTap: () {
+                                context.pushNamed(
+                                  'detail',
+                                  extra: movie,
+                                );
+                              },
+                              child: MovieCard(
+                                title: movie.title,
+                                year: _year(movie),
+                                rating: movie.voteAverage,
+                                imageUrl: _posterUrl(movie),
+                                bookmarked: false,
+                              ),
+                            );
+                          },
                         );
                       },
-                      child: MovieCard(
-                        title: movie['title'],
-                        year: movie['year'],
-                        rating: movie['rating'],
-                        imageUrl: movie['image'],
-                        bookmarked: index % 2 == 0,
-                      ),
                     );
                   },
                 ),
@@ -212,18 +290,26 @@ class MovieScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTab(String label, BuildContext context, {bool active = false}) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(
-        color: active ? context.colors.accent : context.colors.surface,
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: active ? context.colors.surface : context.colors.textSecondary,
-          fontWeight: FontWeight.w600,
+  Widget _buildTab(
+    String label,
+    BuildContext context, {
+    bool active = false,
+    VoidCallback? onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: active ? context.colors.accent : context.colors.surface,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: active ? context.colors.surface : context.colors.textSecondary,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );
