@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:go_router/go_router.dart';
 import 'package:movie_app/common/app_colors.dart';
+import 'package:movie_app/core/theme/theme_store_instance.dart';
 import 'package:movie_app/utils/ThemaHelper.dart';
 import 'components/movie_card.dart';
 
@@ -48,7 +50,7 @@ class MovieScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                   Text(
+                  Text(
                     'Movie',
                     style: TextStyle(
                       color: context.colors.textPrimary,
@@ -62,15 +64,34 @@ class MovieScreen extends StatelessWidget {
                         onTap: () {
                           context.pushNamed('bookmark');
                         },
-                        child: Icon(Icons.bookmark_border, color: context.colors.textPrimary)),
+                        child: Icon(
+                          Icons.bookmark_border,
+                          color: context.colors.textPrimary,
+                        ),
+                      ),
                       SizedBox(width: 12),
-                      Icon(Icons.wb_sunny_outlined, color: context.colors.textPrimary),
+                      Observer(
+                        builder: (_) {
+                          final isDark = themeStore.themeMode == ThemeMode.dark;
+                          return GestureDetector(
+                            onTap: themeStore.toggleTheme,
+                            child: Icon(
+                              isDark ? Icons.wb_sunny_outlined : Icons.nightlight_outlined,
+                              color: context.colors.textPrimary,
+                            ),
+                          );
+                        },
+                      ),
                       SizedBox(width: 12),
                       GestureDetector(
                         onTap: () {
                           context.pushNamed('setting');
                         },
-                        child: Icon(Icons.settings_outlined, color: context.colors.textPrimary)),
+                        child: Icon(
+                          Icons.settings_outlined,
+                          color: context.colors.textPrimary,
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -84,10 +105,13 @@ class MovieScreen extends StatelessWidget {
                   color: context.colors.surface,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child:  TextField(
+                child: TextField(
                   style: TextStyle(color: context.colors.textPrimary),
                   decoration: InputDecoration(
-                    icon: Icon(Icons.search, color: context.colors.textSecondary),
+                    icon: Icon(
+                      Icons.search,
+                      color: context.colors.textSecondary,
+                    ),
                     hintText: 'Search movies...',
                     hintStyle: TextStyle(color: context.colors.textSecondary),
                     border: InputBorder.none,
@@ -99,11 +123,11 @@ class MovieScreen extends StatelessWidget {
               // Tabs
               Row(
                 children: [
-                  _buildTab('Popular',context, active: true),
+                  _buildTab('Popular', context, active: true),
                   const SizedBox(width: 8),
-                  _buildTab('Top Rated',context),
+                  _buildTab('Top Rated', context),
                   const SizedBox(width: 8),
-                  _buildTab('Now Playing',context),
+                  _buildTab('Now Playing', context),
                 ],
               ),
               const SizedBox(height: 12),
@@ -123,10 +147,12 @@ class MovieScreen extends StatelessWidget {
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children:  [
+                        children: [
                           Text(
                             'Popularity',
-                            style: TextStyle(color: context.colors.textSecondary),
+                            style: TextStyle(
+                              color: context.colors.textSecondary,
+                            ),
                           ),
                           Icon(
                             Icons.keyboard_arrow_down,
@@ -143,7 +169,7 @@ class MovieScreen extends StatelessWidget {
                       color: context.colors.surface,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child:  Icon(Icons.tune, color: context.colors.textPrimary),
+                    child: Icon(Icons.tune, color: context.colors.textPrimary),
                   ),
                 ],
               ),
@@ -188,7 +214,7 @@ class MovieScreen extends StatelessWidget {
 
   Widget _buildTab(String label, BuildContext context, {bool active = false}) {
     return Container(
-      padding:  EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
         color: active ? context.colors.accent : context.colors.surface,
         borderRadius: BorderRadius.circular(24),

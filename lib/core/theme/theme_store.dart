@@ -42,4 +42,13 @@ abstract class _ThemeStore with Store {
       themeMode = ThemeMode.system;
     }
   }
+
+  @action
+  Future<void> toggleTheme() async {
+    if (themeMode == ThemeMode.dark) {
+      await setTheme('light');
+    } else {
+      await setTheme('dark');
+    }
+  }
 }
