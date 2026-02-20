@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:go_router/go_router.dart';
 import 'package:movie_app/common/app_colors.dart';
+import 'package:movie_app/core/theme/ThemaPrefence.dart';
+import 'package:movie_app/core/theme/theme_store_instance.dart';
 import 'package:movie_app/utils/ThemaHelper.dart';
 import 'components/theme_setting_tile.dart';
 import 'components/language_setting_tile.dart';
@@ -16,12 +19,15 @@ class _SettingScreenState extends State<SettingScreen> {
   String selectedTheme = 'dark';
   String selectedLanguage = 'en';
 
-  void _onThemeChanged(String theme) {
-    setState(() {
-      selectedTheme = theme;
-    });
-    // TODO: Implement theme change logic
-    print('Theme changed to: $theme');
+  String _themeModeToString(ThemeMode mode) {
+    switch (mode) {
+      case ThemeMode.light:
+        return 'light';
+      case ThemeMode.dark:
+        return 'dark';
+      default:
+        return 'system';
+    }
   }
 
   void _onLanguageChanged(String language) {
@@ -89,10 +95,16 @@ class _SettingScreenState extends State<SettingScreen> {
                     const SizedBox(height: 12),
 
                     // Theme Setting
-                    ThemeSettingTile(
-                      initialTheme: selectedTheme,
-                      onThemeChanged: _onThemeChanged,
+                   /// 🔥 THEME SECTION (Reactive)
+                  Observer(
+                    builder: (_) => ThemeSettingTile(
+                      initialTheme:
+                          _themeModeToString(themeStore.themeMode),
+                      onThemeChanged: (value) {
+                        themeStore.setTheme(value);
+                      },
                     ),
+                  ),
 
                     const SizedBox(height: 12),
 
@@ -194,7 +206,7 @@ class _SettingScreenState extends State<SettingScreen> {
                               ),
                               borderRadius: BorderRadius.circular(20),
                             ),
-                            child:  Icon(
+                            child: Icon(
                               Icons.movie,
                               color: context.colors.textPrimary,
                               size: 50,
