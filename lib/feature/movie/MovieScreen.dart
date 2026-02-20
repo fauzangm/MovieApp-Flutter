@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:movie_app/common/app_colors.dart';
 import 'components/movie_card.dart';
 
-class BerandaScreen extends StatelessWidget {
-	const BerandaScreen({Key? key}) : super(key: key);
+class MovieScreen extends StatelessWidget {
+	const MovieScreen({Key? key}) : super(key: key);
 
 	final List<Map<String, dynamic>> sampleMovies = const [
 		{

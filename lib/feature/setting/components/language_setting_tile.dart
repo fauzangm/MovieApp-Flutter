@@ -1,0 +1,134 @@
+import 'package:flutter/material.dart';
+import 'package:movie_app/common/app_colors.dart';
+
+class LanguageSettingTile extends StatefulWidget {
+  final String initialLanguage;
+  final Function(String) onLanguageChanged;
+
+  const LanguageSettingTile({
+    Key? key,
+    required this.initialLanguage,
+    required this.onLanguageChanged,
+  }) : super(key: key);
+
+  @override
+  State<LanguageSettingTile> createState() => _LanguageSettingTileState();
+}
+
+class _LanguageSettingTileState extends State<LanguageSettingTile> {
+  late String selectedLanguage;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedLanguage = widget.initialLanguage;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.cardBackground,
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header with icon
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.cardBackground,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.language,
+                  color: Color(0xFF2196F3),
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text(
+                      'Language',
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'Choose your preferred language',
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+
+          // Dropdown
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            decoration: BoxDecoration(
+              color: AppColors.cardBackground,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: AppColors.surface,
+                width: 1,
+              ),
+            ),
+            child: DropdownButton<String>(
+              value: selectedLanguage,
+              isExpanded: true,
+              underline: const SizedBox.shrink(),
+              icon: const Icon(
+                Icons.keyboard_arrow_down,
+                color: AppColors.textSecondary,
+              ),
+              dropdownColor: AppColors.surface,
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 16,
+              ),
+              items: const [
+                DropdownMenuItem(
+                  value: 'en',
+                  child: Text('English'),
+                ),
+                DropdownMenuItem(
+                  value: 'id',
+                  child: Text('Bahasa Indonesia'),
+                ),
+              ],
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() {
+                    selectedLanguage = value;
+                  });
+                  widget.onLanguageChanged(value);
+                }
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
