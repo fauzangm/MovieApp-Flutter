@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:movie_app/feature/beranda/detail/DetailMovieScreen.dart';
+import 'package:movie_app/feature/movie/detail/DetailMovieScreen.dart';
 
 class DetailMovieExample extends StatelessWidget {
   const DetailMovieExample({Key? key}) : super(key: key);

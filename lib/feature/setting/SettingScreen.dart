@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:movie_app/common/app_colors.dart';
 import 'components/theme_setting_tile.dart';
 import 'components/language_setting_tile.dart';
-import 'components/setting_section_tile.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({Key? key}) : super(key: key);

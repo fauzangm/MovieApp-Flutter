@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:movie_app/common/app_colors.dart';
-import '../../components/rating_badge.dart';
-import '../components/movie_card.dart';
 import 'components/cast_member_card.dart';
 import 'components/similar_movies_section.dart';
 import 'components/movie_poster_grid.dart';
