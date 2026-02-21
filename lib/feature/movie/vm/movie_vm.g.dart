@@ -27,6 +27,111 @@ mixin _$MovieVM on _MovieVM, Store {
     });
   }
 
+  late final _$movieDetailAtom = Atom(
+    name: '_MovieVM.movieDetail',
+    context: context,
+  );
+
+  @override
+  MovieDetail? get movieDetail {
+    _$movieDetailAtom.reportRead();
+    return super.movieDetail;
+  }
+
+  @override
+  set movieDetail(MovieDetail? value) {
+    _$movieDetailAtom.reportWrite(value, super.movieDetail, () {
+      super.movieDetail = value;
+    });
+  }
+
+  late final _$similarMoviesAtom = Atom(
+    name: '_MovieVM.similarMovies',
+    context: context,
+  );
+
+  @override
+  List<Movie> get similarMovies {
+    _$similarMoviesAtom.reportRead();
+    return super.similarMovies;
+  }
+
+  @override
+  set similarMovies(List<Movie> value) {
+    _$similarMoviesAtom.reportWrite(value, super.similarMovies, () {
+      super.similarMovies = value;
+    });
+  }
+
+  late final _$castAtom = Atom(name: '_MovieVM.cast', context: context);
+
+  @override
+  List<CastModel> get cast {
+    _$castAtom.reportRead();
+    return super.cast;
+  }
+
+  @override
+  set cast(List<CastModel> value) {
+    _$castAtom.reportWrite(value, super.cast, () {
+      super.cast = value;
+    });
+  }
+
+  late final _$isLoadingDetailAtom = Atom(
+    name: '_MovieVM.isLoadingDetail',
+    context: context,
+  );
+
+  @override
+  bool get isLoadingDetail {
+    _$isLoadingDetailAtom.reportRead();
+    return super.isLoadingDetail;
+  }
+
+  @override
+  set isLoadingDetail(bool value) {
+    _$isLoadingDetailAtom.reportWrite(value, super.isLoadingDetail, () {
+      super.isLoadingDetail = value;
+    });
+  }
+
+  late final _$isLoadingSimilarAtom = Atom(
+    name: '_MovieVM.isLoadingSimilar',
+    context: context,
+  );
+
+  @override
+  bool get isLoadingSimilar {
+    _$isLoadingSimilarAtom.reportRead();
+    return super.isLoadingSimilar;
+  }
+
+  @override
+  set isLoadingSimilar(bool value) {
+    _$isLoadingSimilarAtom.reportWrite(value, super.isLoadingSimilar, () {
+      super.isLoadingSimilar = value;
+    });
+  }
+
+  late final _$isLoadingCastAtom = Atom(
+    name: '_MovieVM.isLoadingCast',
+    context: context,
+  );
+
+  @override
+  bool get isLoadingCast {
+    _$isLoadingCastAtom.reportRead();
+    return super.isLoadingCast;
+  }
+
+  @override
+  set isLoadingCast(bool value) {
+    _$isLoadingCastAtom.reportWrite(value, super.isLoadingCast, () {
+      super.isLoadingCast = value;
+    });
+  }
+
   late final _$errorMessageAtom = Atom(
     name: '_MovieVM.errorMessage',
     context: context,
@@ -67,10 +172,50 @@ mixin _$MovieVM on _MovieVM, Store {
     );
   }
 
+  late final _$fetchMovieDetailAsyncAction = AsyncAction(
+    '_MovieVM.fetchMovieDetail',
+    context: context,
+  );
+
+  @override
+  Future<void> fetchMovieDetail(int movieId) {
+    return _$fetchMovieDetailAsyncAction.run(
+      () => super.fetchMovieDetail(movieId),
+    );
+  }
+
+  late final _$fetchSimilarMoviesAsyncAction = AsyncAction(
+    '_MovieVM.fetchSimilarMovies',
+    context: context,
+  );
+
+  @override
+  Future<void> fetchSimilarMovies(int movieId) {
+    return _$fetchSimilarMoviesAsyncAction.run(
+      () => super.fetchSimilarMovies(movieId),
+    );
+  }
+
+  late final _$fetchMovieCastAsyncAction = AsyncAction(
+    '_MovieVM.fetchMovieCast',
+    context: context,
+  );
+
+  @override
+  Future<void> fetchMovieCast(int movieId) {
+    return _$fetchMovieCastAsyncAction.run(() => super.fetchMovieCast(movieId));
+  }
+
   @override
   String toString() {
     return '''
 isLoading: ${isLoading},
+movieDetail: ${movieDetail},
+similarMovies: ${similarMovies},
+cast: ${cast},
+isLoadingDetail: ${isLoadingDetail},
+isLoadingSimilar: ${isLoadingSimilar},
+isLoadingCast: ${isLoadingCast},
 errorMessage: ${errorMessage}
     ''';
   }

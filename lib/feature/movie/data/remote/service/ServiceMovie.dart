@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:movie_app/core/DioClient.dart';
-import 'package:movie_app/feature/movie/data/remote/model/MovieModel.dart';
+import 'package:movie_app/feature/movie/data/remote/model/MovieResponse.dart';
+import 'package:movie_app/feature/movie/data/remote/model/DetailMovieResponse.dart';
+import 'package:movie_app/feature/movie/data/remote/model/CastMovieResponse.dart';
 
 class ServiceMovie {
   Future<MovieResponse> getMovies(
@@ -15,6 +17,21 @@ class ServiceMovie {
     );
 
     return MovieResponse.fromJson(response.data);
+  }
+
+  Future<MovieDetail> getMovieDetail(int movieId) async {
+    final response = await DioClient.dio.get("/movie/$movieId");
+    return MovieDetail.fromJson(response.data);
+  }
+
+  Future<MovieResponse> getSimilarMovies(int movieId) async {
+    final response = await DioClient.dio.get("/movie/$movieId/similar");
+    return MovieResponse.fromJson(response.data);
+  }
+
+  Future<CastMovieResponse> getMovieCast(int movieId) async {
+    final response = await DioClient.dio.get("/movie/$movieId/credits");
+    return CastMovieResponse.fromJson(response.data);
   }
 
   Future<MovieResponse> searchMovies(String query, int page) async {

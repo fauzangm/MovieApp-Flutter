@@ -1,5 +1,7 @@
 import 'package:mobx/mobx.dart';
-import 'package:movie_app/feature/movie/data/remote/model/MovieModel.dart';
+import 'package:movie_app/feature/movie/data/remote/model/MovieResponse.dart';
+import 'package:movie_app/feature/movie/data/remote/model/DetailMovieResponse.dart';
+import 'package:movie_app/feature/movie/data/remote/model/CastMovieResponse.dart';
 import 'package:movie_app/feature/movie/data/remote/service/ServiceMovie.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -25,6 +27,25 @@ abstract class _MovieVM with Store {
 
   @observable
   bool isLoading = false;
+
+  // Detail states
+  @observable
+  MovieDetail? movieDetail;
+
+  @observable
+  List<Movie> similarMovies = [];
+
+  @observable
+  List<CastModel> cast = [];
+
+  @observable
+  bool isLoadingDetail = false;
+
+  @observable
+  bool isLoadingSimilar = false;
+
+  @observable
+  bool isLoadingCast = false;
 
   @observable
   String? errorMessage;
@@ -77,6 +98,47 @@ abstract class _MovieVM with Store {
       errorMessage = e.toString();
     } finally {
       isLoading = false;
+    }
+  }
+
+  @action
+  Future<void> fetchMovieDetail(int movieId) async {
+    try {
+      isLoadingDetail = true;
+      errorMessage = null;
+      movieDetail = await _service.getMovieDetail(movieId);
+    } catch (e) {
+      errorMessage = e.toString();
+    } finally {
+      isLoadingDetail = false;
+    }
+  }
+
+  @action
+  Future<void> fetchSimilarMovies(int movieId) async {
+    try {
+      isLoadingSimilar = true;
+      errorMessage = null;
+      final response = await _service.getSimilarMovies(movieId);
+      similarMovies = response.results;
+    } catch (e) {
+      errorMessage = e.toString();
+    } finally {
+      isLoadingSimilar = false;
+    }
+  }
+
+  @action
+  Future<void> fetchMovieCast(int movieId) async {
+    try {
+      isLoadingCast = true;
+      errorMessage = null;
+      final castResponse = await _service.getMovieCast(movieId);
+      cast = castResponse.cast;
+    } catch (e) {
+      errorMessage = e.toString();
+    } finally {
+      isLoadingCast = false;
     }
   }
 

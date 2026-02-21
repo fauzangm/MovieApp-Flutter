@@ -12,33 +12,23 @@ class MoviePosterGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (posterUrls.isEmpty) {
+      return Container(); // Return an empty container if there are no poster URLs
+    }
     return Container(
       width: double.infinity,
       color: context.colors.surface,
-      child: GridView.builder(
-        padding: const EdgeInsets.all(8),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4,
-          crossAxisSpacing: 4,
-          mainAxisSpacing: 4,
-          childAspectRatio: 0.65,
-        ),
-        itemCount: posterUrls.length,
-        itemBuilder: (context, index) {
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(6),
-            child: Image.network(
-              posterUrls[index],
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  color: context.colors.cardBackground,
-                  child: Icon(
-                    Icons.image_not_supported,
-                    color: context.colors.textSecondary,
-                  ),
-                );
-              },
+      child: Image.network(
+        posterUrls.first,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: 250, // Adjust height as needed
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            color: context.colors.cardBackground,
+            child: Icon(
+              Icons.image_not_supported,
+              color: context.colors.textSecondary,
             ),
           );
         },

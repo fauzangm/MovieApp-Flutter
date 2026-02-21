@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:go_router/go_router.dart';
 import 'package:movie_app/core/theme/theme_store_instance.dart';
-import 'package:movie_app/feature/movie/data/remote/model/MovieModel.dart';
+import 'package:movie_app/feature/movie/data/remote/model/MovieResponse.dart';
 import 'package:movie_app/feature/movie/vm/movie_vm.dart';
 import 'package:movie_app/utils/ThemaHelper.dart';
 import 'components/movie_card.dart';
