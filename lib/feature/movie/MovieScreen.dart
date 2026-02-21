@@ -1,7 +1,7 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:go_router/go_router.dart';
-import 'package:movie_app/common/app_colors.dart';
 import 'package:movie_app/core/theme/theme_store_instance.dart';
 import 'package:movie_app/feature/movie/data/remote/model/MovieModel.dart';
 import 'package:movie_app/feature/movie/vm/movie_vm.dart';
@@ -20,26 +20,46 @@ class _MovieScreenState extends State<MovieScreen> {
 
   final MovieVM _vm = MovieVM();
   final ScrollController _scrollController = ScrollController();
+  final TextEditingController _searchController = TextEditingController();
 
   String _selectedType = 'popular';
+  String _selectedSort = 'idle'; // idle = belum pilih sort
+  String _lastChipType = 'popular'; // ingat chip terakhir sebelum search
+  String? _selectedChip; // null = tidak ada chip yang aktif (saat search/sort)
+
+  Timer? _searchDebounce;
 
   @override
   void initState() {
     super.initState();
-    _vm.fetchMovies(_selectedType);
+    _selectedChip = _selectedType; // set chip aktif awal
+    _vm.fetchMovies(type: _selectedType);
 
     _scrollController.addListener(() {
       if (!_scrollController.hasClients) return;
       final position = _scrollController.position;
       if (position.pixels >= position.maxScrollExtent - 300) {
-        _vm.fetchMovies(_selectedType, isLoadMore: true);
+        if (_searchController.text.trim().isNotEmpty) {
+          _vm.fetchMovies(
+            query: _searchController.text.trim(),
+            isLoadMore: true,
+          );
+        } else {
+          _vm.fetchMovies(
+            type: _lastChipType,
+            sortBy: _selectedSort,
+            isLoadMore: true,
+          );
+        }
       }
     });
   }
 
   @override
   void dispose() {
+    _searchDebounce?.cancel();
     _scrollController.dispose();
+    _searchController.dispose();
     _vm.dispose();
     super.dispose();
   }
@@ -48,11 +68,58 @@ class _MovieScreenState extends State<MovieScreen> {
     if (_selectedType == type) return;
     setState(() {
       _selectedType = type;
+      _lastChipType = type;
+      _selectedChip = type;
+      _selectedSort = 'idle';
+      _searchController.clear();
     });
     if (_scrollController.hasClients) {
       _scrollController.jumpTo(0);
     }
-    _vm.fetchMovies(_selectedType);
+    _vm.fetchMovies(type: _lastChipType, sortBy: _selectedSort);
+  }
+
+  void _onSearchChanged(String value) {
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 500), () {
+      final trimmed = value.trim();
+      if (trimmed.isEmpty) {
+        // kembali ke chip yang terakhir dipilih
+        setState(() {
+          _selectedChip = _lastChipType;
+        });
+        _vm.fetchMovies(type: _lastChipType, sortBy: _selectedSort);
+      } else {
+        setState(() {
+          _selectedSort = 'idle';
+          _selectedChip = null; // tidak ada chip aktif saat search
+        });
+        _vm.fetchMovies(query: trimmed);
+      }
+    });
+  }
+
+  void _onSortChanged(String sort) {
+    if (_selectedSort == sort) return;
+    if (sort == 'idle') {
+      setState(() {
+        _selectedType = _lastChipType;
+        _selectedSort = 'idle';
+        _selectedChip = _lastChipType;
+        _searchController.clear();
+      });
+      _vm.fetchMovies(type: _lastChipType, sortBy: _selectedSort);
+    } else {
+      setState(() {
+        _selectedSort = sort;
+        _selectedChip = null; // tidak ada chip aktif saat sort
+        _searchController.clear();
+      });
+      if (_scrollController.hasClients) {
+        _scrollController.jumpTo(0);
+      }
+      _vm.fetchMovies(type: _lastChipType, sortBy: _selectedSort);
+    }
   }
 
   String _posterUrl(Movie movie) {
@@ -109,7 +176,9 @@ class _MovieScreenState extends State<MovieScreen> {
                           return GestureDetector(
                             onTap: themeStore.toggleTheme,
                             child: Icon(
-                              isDark ? Icons.wb_sunny_outlined : Icons.nightlight_outlined,
+                              isDark
+                                  ? Icons.wb_sunny_outlined
+                                  : Icons.nightlight_outlined,
                               color: context.colors.textPrimary,
                             ),
                           );
@@ -139,7 +208,9 @@ class _MovieScreenState extends State<MovieScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: TextField(
+                  controller: _searchController,
                   style: TextStyle(color: context.colors.textPrimary),
+                  onChanged: _onSearchChanged,
                   decoration: InputDecoration(
                     icon: Icon(
                       Icons.search,
@@ -159,21 +230,21 @@ class _MovieScreenState extends State<MovieScreen> {
                   _buildTab(
                     'Popular',
                     context,
-                    active: _selectedType == 'popular',
+                    active: _selectedChip == 'popular',
                     onTap: () => _onSelectType('popular'),
                   ),
                   const SizedBox(width: 8),
                   _buildTab(
                     'Top Rated',
                     context,
-                    active: _selectedType == 'top_rated',
+                    active: _selectedChip == 'top_rated',
                     onTap: () => _onSelectType('top_rated'),
                   ),
                   const SizedBox(width: 8),
                   _buildTab(
                     'Now Playing',
                     context,
-                    active: _selectedType == 'now_playing',
+                    active: _selectedChip == 'now_playing',
                     onTap: () => _onSelectType('now_playing'),
                   ),
                 ],
@@ -193,35 +264,44 @@ class _MovieScreenState extends State<MovieScreen> {
                         color: context.colors.surface,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Popularity',
-                            style: TextStyle(
-                              color: context.colors.textSecondary,
-                            ),
+                      child: DropdownButton<String>(
+                        value: _selectedSort,
+                        isExpanded: true,
+                        underline: const SizedBox(),
+                        style: TextStyle(
+                          color: context.colors.textPrimary,
+                          fontSize: 14,
+                        ),
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'idle',
+                            child: Text('Option Sort Newest'),
                           ),
-                          Icon(
-                            Icons.keyboard_arrow_down,
-                            color: context.colors.textSecondary,
+                          DropdownMenuItem(
+                            value: 'release_date.desc',
+                            child: Text('Release Date (Newest)'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'release_date.asc',
+                            child: Text('Release Date (Oldest)'),
                           ),
                         ],
+                        onChanged: (value) {
+                          if (value != null) {
+                            _onSortChanged(value);
+                          }
+                        },
+                        icon: Icon(
+                          Icons.keyboard_arrow_down,
+                          color: context.colors.textSecondary,
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: context.colors.surface,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(Icons.tune, color: context.colors.textPrimary),
-                  ),
+            
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
 
               // Grid of movies
               Expanded(
@@ -236,13 +316,17 @@ class _MovieScreenState extends State<MovieScreen> {
                           return Center(
                             child: Text(
                               _vm.errorMessage!,
-                              style: TextStyle(color: context.colors.textPrimary),
+                              style: TextStyle(
+                                color: context.colors.textPrimary,
+                              ),
                             ),
                           );
                         }
 
                         if (_vm.isLoading && movies.isEmpty) {
-                          return const Center(child: CircularProgressIndicator());
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
                         }
 
                         return GridView.builder(
@@ -250,23 +334,22 @@ class _MovieScreenState extends State<MovieScreen> {
                           itemCount: movies.length + (_vm.isLoading ? 1 : 0),
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 14,
-                            mainAxisSpacing: 18,
-                            childAspectRatio: 0.57,
-                          ),
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 14,
+                                mainAxisSpacing: 18,
+                                childAspectRatio: 0.57,
+                              ),
                           itemBuilder: (context, index) {
                             if (index >= movies.length) {
-                              return const Center(child: CircularProgressIndicator());
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
                             }
 
                             final movie = movies[index];
                             return GestureDetector(
                               onTap: () {
-                                context.pushNamed(
-                                  'detail',
-                                  extra: movie,
-                                );
+                                context.pushNamed('detail', extra: movie);
                               },
                               child: MovieCard(
                                 title: movie.title,
@@ -307,7 +390,9 @@ class _MovieScreenState extends State<MovieScreen> {
         child: Text(
           label,
           style: TextStyle(
-            color: active ? context.colors.surface : context.colors.textSecondary,
+            color: active
+                ? context.colors.surface
+                : context.colors.textSecondary,
             fontWeight: FontWeight.w600,
           ),
         ),

@@ -16,4 +16,28 @@ class ServiceMovie {
 
     return MovieResponse.fromJson(response.data);
   }
+
+  Future<MovieResponse> searchMovies(String query, int page) async {
+    final response = await DioClient.dio.get(
+      "/search/movie",
+      queryParameters: {
+        "query": query,
+        "page": page,
+      },
+    );
+
+    return MovieResponse.fromJson(response.data);
+  }
+
+  Future<MovieResponse> discoverMovies(String sortBy, int page) async {
+    final response = await DioClient.dio.get(
+      "/discover/movie",
+      queryParameters: {
+        "sort_by": sortBy,
+        "page": page,
+      },
+    );
+
+    return MovieResponse.fromJson(response.data);
+  }
 }

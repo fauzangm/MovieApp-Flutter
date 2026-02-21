@@ -20,6 +20,8 @@ abstract class _MovieVM with Store {
   int _currentPage = 1;
   int _totalPages = 1;
   String _currentType = "popular";
+  String _currentSort = "idle";
+  String? _currentQuery;
 
   @observable
   bool isLoading = false;
@@ -28,14 +30,26 @@ abstract class _MovieVM with Store {
   String? errorMessage;
 
   @action
-  Future<void> fetchMovies(String type, {bool isLoadMore = false}) async {
+  Future<void> fetchMovies({
+    String? type,
+    String? sortBy,
+    String? query,
+    bool isLoadMore = false,
+  }) async {
     try {
       if (isLoading) return;
       if (!isLoadMore) {
         _movies.clear();
         _currentPage = 1;
         _totalPages = 1;
-        _currentType = type;
+        if (type != null) _currentType = type;
+        if (sortBy != null) _currentSort = sortBy;
+        if (query != null) {
+          _currentQuery = query;
+        } else {
+          // saat tidak ada query, pastikan _currentQuery di-clear agar tidak stuck di mode search
+          _currentQuery = null;
+        }
       }
 
       if (_currentPage > _totalPages) return;
@@ -43,8 +57,14 @@ abstract class _MovieVM with Store {
       isLoading = true;
       errorMessage = null;
 
-      final MovieResponse response =
-          await _service.getMovies(_currentType, _currentPage);
+      MovieResponse response;
+      if (_currentQuery != null) {
+        response = await _service.searchMovies(_currentQuery!, _currentPage);
+      } else if (_currentSort != 'idle' && _currentSort.isNotEmpty) {
+        response = await _service.discoverMovies(_currentSort, _currentPage);
+      } else {
+        response = await _service.getMovies(_currentType, _currentPage);
+      }
 
       _totalPages = response.totalPages;
       _currentPage++;

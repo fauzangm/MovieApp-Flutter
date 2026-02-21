@@ -51,9 +51,19 @@ mixin _$MovieVM on _MovieVM, Store {
   );
 
   @override
-  Future<void> fetchMovies(String type, {bool isLoadMore = false}) {
+  Future<void> fetchMovies({
+    String? type,
+    String? sortBy,
+    String? query,
+    bool isLoadMore = false,
+  }) {
     return _$fetchMoviesAsyncAction.run(
-      () => super.fetchMovies(type, isLoadMore: isLoadMore),
+      () => super.fetchMovies(
+        type: type,
+        sortBy: sortBy,
+        query: query,
+        isLoadMore: isLoadMore,
+      ),
     );
   }
 

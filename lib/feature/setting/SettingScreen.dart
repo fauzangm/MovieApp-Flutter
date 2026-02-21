@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:go_router/go_router.dart';
-import 'package:movie_app/common/app_colors.dart';
-import 'package:movie_app/core/theme/ThemaPrefence.dart';
 import 'package:movie_app/core/theme/theme_store_instance.dart';
 import 'package:movie_app/utils/ThemaHelper.dart';
 import 'components/theme_setting_tile.dart';

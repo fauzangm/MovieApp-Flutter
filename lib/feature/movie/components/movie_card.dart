@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:movie_app/common/app_colors.dart';
 import 'package:movie_app/utils/ThemaHelper.dart';
 import '../../components/rating_badge.dart';
 import '../../components/bookmark_button.dart';
