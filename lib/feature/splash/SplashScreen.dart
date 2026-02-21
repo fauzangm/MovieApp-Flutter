@@ -1,8 +1,9 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:go_router/go_router.dart';
 import 'package:movie_app/utils/ThemaHelper.dart';
+import 'package:movie_app/core/language/language_store_instance.dart';
 import '../../common/app_colors.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -15,6 +16,10 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   int currentIndex = 0;
   late Timer timer;
+
+  String _getLocalizedText(String enText, String idText) {
+    return languageStore.selectedLanguage == 'id' ? idText : enText;
+  }
 
   @override
   void initState() {
@@ -43,59 +48,61 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [context.colors.gradientStart, context.colors.gradientEnd],
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Clapper board icon
-            Icon(
-              Icons.movie_creation_outlined,
-              size: 80,
-              color: context.colors.textPrimary,
+    return Observer(
+      builder: (_) => Scaffold(
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [context.colors.gradientStart, context.colors.gradientEnd],
             ),
-            const SizedBox(height: 40),
-
-            // Movie title
-            Text(
-              'Movie',
-              style: TextStyle(
-                fontSize: 64,
-                fontWeight: FontWeight.bold,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Clapper board icon
+              Icon(
+                Icons.movie_creation_outlined,
+                size: 80,
                 color: context.colors.textPrimary,
               ),
-            ),
-            const SizedBox(height: 16),
+              const SizedBox(height: 40),
 
-            // Subtitle
-            Text(
-              'Discover Amazing Films',
-              style: TextStyle(
-                fontSize: 18,
-                color: context.colors.textSecondary,
-                fontWeight: FontWeight.w400,
+              // Movie title
+              Text(
+                _getLocalizedText('Movie', 'Film'),
+                style: TextStyle(
+                  fontSize: 64,
+                  fontWeight: FontWeight.bold,
+                  color: context.colors.textPrimary,
+                ),
               ),
-            ),
-            const SizedBox(height: 120),
+              const SizedBox(height: 16),
 
-            // Page indicators
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(3, (index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6),
-                  child: _buildIndicator(isActive: index == currentIndex),
-                );
-              }),
-            ),
-          ],
+              // Subtitle
+              Text(
+                _getLocalizedText('Discover Amazing Films', 'Temukan Film Luar Biasa'),
+                style: TextStyle(
+                  fontSize: 18,
+                  color: context.colors.textSecondary,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              const SizedBox(height: 120),
+
+              // Page indicators
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(3, (index) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 6),
+                    child: _buildIndicator(isActive: index == currentIndex),
+                  );
+                }),
+              ),
+            ],
+          ),
         ),
       ),
     );

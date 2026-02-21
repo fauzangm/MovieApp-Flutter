@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:go_router/go_router.dart';
+import 'package:movie_app/core/language/language_store_instance.dart';
 import 'package:movie_app/utils/ThemaHelper.dart';
 import 'package:movie_app/feature/bookmark/vm/bookmark_vm.dart';
 import 'package:movie_app/feature/bookmark/data/local/database/bookmark_database.dart';
@@ -21,6 +22,10 @@ class _BookMarkScreenState extends State<BookMarkScreen> {
   void initState() {
     super.initState();
     _bookmarkVM.loadBookmarks();
+  }
+
+  String _getLocalizedText(String enText, String idText) {
+    return languageStore.selectedLanguage == 'id' ? idText : enText;
   }
 
   @override
@@ -88,7 +93,7 @@ class _BookMarkScreenState extends State<BookMarkScreen> {
                 ),
               ),
               title: Text(
-                'Bookmarks',
+                _getLocalizedText('Bookmarks', 'Penanda'),
                 style: TextStyle(
                   color: context.colors.textPrimary,
                   fontSize: 24,
@@ -147,34 +152,36 @@ class _BookMarkScreenState extends State<BookMarkScreen> {
                     }
 
                     return SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 16,
+                      ),
                       sliver: SliverGrid(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 14,
-                          mainAxisSpacing: 18,
-                          childAspectRatio: 0.57,
-                        ),
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            final bookmark = bookmarks[index];
-                            final movie = _bookmarkToMovie(bookmark);
-                            return GestureDetector(
-                              onTap: () {
-                                context.pushNamed('detail', extra: movie);
-                              },
-                              child: MovieCard(
-                                title: bookmark.title,
-                                year: _year(bookmark.releaseDate),
-                                rating: bookmark.voteAverage,
-                                imageUrl: _posterUrl(bookmark.posterPath),
-                                movieId: bookmark.id,
-                                onBookmark: () => _bookmarkVM.toggleBookmark(movie),
-                              ),
-                            );
-                          },
-                          childCount: bookmarks.length,
-                        ),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 14,
+                              mainAxisSpacing: 18,
+                              childAspectRatio: 0.57,
+                            ),
+                        delegate: SliverChildBuilderDelegate((context, index) {
+                          final bookmark = bookmarks[index];
+                          final movie = _bookmarkToMovie(bookmark);
+                          return GestureDetector(
+                            onTap: () {
+                              context.pushNamed('detail', extra: movie);
+                            },
+                            child: MovieCard(
+                              title: bookmark.title,
+                              year: _year(bookmark.releaseDate),
+                              rating: bookmark.voteAverage,
+                              imageUrl: _posterUrl(bookmark.posterPath),
+                              movieId: bookmark.id,
+                              onBookmark: () =>
+                                  _bookmarkVM.toggleBookmark(movie),
+                            ),
+                          );
+                        }, childCount: bookmarks.length),
                       ),
                     );
                   },

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:go_router/go_router.dart';
+import 'package:movie_app/core/language/language_store_instance.dart';
 import 'package:movie_app/core/theme/theme_store_instance.dart';
 import 'package:movie_app/feature/movie/data/remote/model/MovieResponse.dart';
 import 'package:movie_app/feature/movie/vm/movie_vm.dart';
@@ -139,6 +140,10 @@ class _MovieScreenState extends State<MovieScreen> {
     return date;
   }
 
+  String _getLocalizedText(String enText, String idText) {
+    return languageStore.selectedLanguage == 'id' ? idText : enText;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -154,7 +159,7 @@ class _MovieScreenState extends State<MovieScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Movie',
+                    _getLocalizedText('Movie', 'Film'),
                     style: TextStyle(
                       color: context.colors.textPrimary,
                       fontSize: 28,
@@ -219,7 +224,10 @@ class _MovieScreenState extends State<MovieScreen> {
                       Icons.search,
                       color: context.colors.textSecondary,
                     ),
-                    hintText: 'Search movies...',
+                    hintText: _getLocalizedText(
+                      'Search movies...',
+                      'Cari film...',
+                    ),
                     hintStyle: TextStyle(color: context.colors.textSecondary),
                     border: InputBorder.none,
                   ),
@@ -231,21 +239,21 @@ class _MovieScreenState extends State<MovieScreen> {
               Row(
                 children: [
                   _buildTab(
-                    'Popular',
+                    _getLocalizedText('Popular', 'Populer'),
                     context,
                     active: _selectedChip == 'popular',
                     onTap: () => _onSelectType('popular'),
                   ),
                   const SizedBox(width: 8),
                   _buildTab(
-                    'Top Rated',
+                    _getLocalizedText('Popular', 'Populer'),
                     context,
                     active: _selectedChip == 'top_rated',
                     onTap: () => _onSelectType('top_rated'),
                   ),
                   const SizedBox(width: 8),
                   _buildTab(
-                    'Now Playing',
+                    _getLocalizedText('Top Rated', 'Rating Tertinggi'),
                     context,
                     active: _selectedChip == 'now_playing',
                     onTap: () => _onSelectType('now_playing'),
@@ -275,18 +283,33 @@ class _MovieScreenState extends State<MovieScreen> {
                           color: context.colors.textPrimary,
                           fontSize: 14,
                         ),
-                        items: const [
+                        items: [
                           DropdownMenuItem(
                             value: 'idle',
-                            child: Text('Option Sort Newest'),
+                            child: Text(
+                              _getLocalizedText(
+                                'Option Sort Newest',
+                                'Opsi Urut Terbaru',
+                              ),
+                            ),
                           ),
                           DropdownMenuItem(
                             value: 'release_date.desc',
-                            child: Text('Release Date (Newest)'),
+                            child: Text(
+                              _getLocalizedText(
+                                'Release Date (Newest)',
+                                'Tanggal Rilis (Terbaru)',
+                              ),
+                            ),
                           ),
                           DropdownMenuItem(
                             value: 'release_date.asc',
-                            child: Text('Release Date (Oldest)'),
+                            child: Text(
+                              _getLocalizedText(
+                                'Release Date (Oldest)',
+                                'Tanggal Rilis (Terlama)',
+                              ),
+                            ),
                           ),
                         ],
                         onChanged: (value) {
@@ -301,7 +324,6 @@ class _MovieScreenState extends State<MovieScreen> {
                       ),
                     ),
                   ),
-            
                 ],
               ),
               const SizedBox(height: 16),
@@ -320,18 +342,14 @@ class _MovieScreenState extends State<MovieScreen> {
                       if (movies.isEmpty && !_vm.isLoading) {
                         return Center(
                           child: Text(
-                            'No movies found',
-                            style: TextStyle(
-                              color: context.colors.textPrimary,
-                            ),
+                            _getLocalizedText('No movies found', 'Tidak ada film ditemukan'),
+                            style: TextStyle(color: context.colors.textPrimary),
                           ),
                         );
                       }
 
                       if (_vm.isLoading && movies.isEmpty) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
+                        return const Center(child: CircularProgressIndicator());
                       }
 
                       return GridView.builder(
@@ -362,7 +380,8 @@ class _MovieScreenState extends State<MovieScreen> {
                               rating: movie.voteAverage,
                               imageUrl: _posterUrl(movie),
                               movieId: movie.id,
-                              onBookmark: () => _bookmarkVM.toggleBookmark(movie),
+                              onBookmark: () =>
+                                  _bookmarkVM.toggleBookmark(movie),
                             ),
                           );
                         },

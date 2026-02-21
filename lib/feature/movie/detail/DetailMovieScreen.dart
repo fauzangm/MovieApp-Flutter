@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:go_router/go_router.dart';
+import 'package:movie_app/core/language/language_store_instance.dart';
 import 'package:movie_app/utils/ThemaHelper.dart';
 import 'package:movie_app/feature/movie/data/remote/model/MovieResponse.dart';
 import 'package:movie_app/feature/movie/vm/movie_vm.dart';
@@ -55,6 +56,10 @@ class _DetailMovieScreenState extends State<DetailMovieScreen> {
     return date;
   }
 
+  String _getLocalizedText(String enText, String idText) {
+    return languageStore.selectedLanguage == 'id' ? idText : enText;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,7 +87,10 @@ class _DetailMovieScreenState extends State<DetailMovieScreen> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: IconButton(
-                    icon: Icon(Icons.arrow_back, color: context.colors.textPrimary),
+                    icon: Icon(
+                      Icons.arrow_back,
+                      color: context.colors.textPrimary,
+                    ),
                     onPressed: () => context.pop(),
                   ),
                 ),
@@ -130,7 +138,7 @@ class _DetailMovieScreenState extends State<DetailMovieScreen> {
                   background: MoviePosterGrid(
                     posterUrls: [
                       if (detail.backdropPath != null)
-                        _posterUrl(detail.backdropPath)
+                        _posterUrl(detail.backdropPath),
                     ],
                   ),
                 ),
@@ -139,7 +147,10 @@ class _DetailMovieScreenState extends State<DetailMovieScreen> {
               // Content
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 20,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -212,31 +223,31 @@ class _DetailMovieScreenState extends State<DetailMovieScreen> {
                         spacing: 8,
                         children: detail.genres
                             .map(
-                                  (genre) => Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 6,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: context.colors.surface,
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: Text(
-                                      genre.name,
-                                      style: TextStyle(
-                                        color: context.colors.textPrimary,
-                                        fontSize: 12,
-                                      ),
-                                    ),
+                              (genre) => Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: context.colors.surface,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Text(
+                                  genre.name,
+                                  style: TextStyle(
+                                    color: context.colors.textPrimary,
+                                    fontSize: 12,
                                   ),
-                                )
+                                ),
+                              ),
+                            )
                             .toList(),
                       ),
                       const SizedBox(height: 24),
 
                       // Overview Title
                       Text(
-                        'Overview',
+                        _getLocalizedText('Overview', 'Ringkasan'),
                         style: TextStyle(
                           color: context.colors.textPrimary,
                           fontSize: 20,
@@ -257,12 +268,24 @@ class _DetailMovieScreenState extends State<DetailMovieScreen> {
                       const SizedBox(height: 28),
 
                       // Cast List (Horizontal Scroll)
+                       // Similar Movies Section
+                      Text(
+                        _getLocalizedText('Cast', 'Pemeran'),
+                        style: TextStyle(
+                          color: context.colors.textPrimary,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
                       SizedBox(
                         height: 160,
                         child: Observer(
                           builder: (_) {
                             if (_vm.isLoadingCast) {
-                              return const Center(child: CircularProgressIndicator());
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
                             }
                             return ListView.builder(
                               scrollDirection: Axis.horizontal,
@@ -286,7 +309,7 @@ class _DetailMovieScreenState extends State<DetailMovieScreen> {
 
                       // Similar Movies Section
                       Text(
-                        'Similar Movies',
+                        _getLocalizedText('Similar Movies', 'Film Serupa'),
                         style: TextStyle(
                           color: context.colors.textPrimary,
                           fontSize: 20,
@@ -297,15 +320,21 @@ class _DetailMovieScreenState extends State<DetailMovieScreen> {
                       Observer(
                         builder: (_) {
                           if (_vm.isLoadingSimilar) {
-                            return const Center(child: CircularProgressIndicator());
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
                           }
                           return SimilarMoviesSection(
-                            movies: _vm.similarMovies.map((m) => {
-                              'title': m.title,
-                              'year': _year(m.releaseDate),
-                              'rating': m.voteAverage,
-                              'image': _posterUrl(m.posterPath),
-                            }).toList(),
+                            movies: _vm.similarMovies
+                                .map(
+                                  (m) => {
+                                    'title': m.title,
+                                    'year': _year(m.releaseDate),
+                                    'rating': m.voteAverage,
+                                    'image': _posterUrl(m.posterPath),
+                                  },
+                                )
+                                .toList(),
                           );
                         },
                       ),

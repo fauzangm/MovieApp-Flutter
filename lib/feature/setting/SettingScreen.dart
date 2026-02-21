@@ -29,11 +29,18 @@ class _SettingScreenState extends State<SettingScreen> {
   void _onLanguageChanged(String language) {
     print('SettingScreen: Language changed to: $language');
     languageStore.setLanguage(language);
+    context.goNamed('splash');
+  }
+
+  String _getLocalizedText(String enText, String idText) {
+    return languageStore.selectedLanguage == 'id' ? idText : enText;
   }
 
   @override
   Widget build(BuildContext context) {
-    print('SettingScreen: Current language from store: ${languageStore.selectedLanguage}');
+    print(
+      'SettingScreen: Current language from store: ${languageStore.selectedLanguage}',
+    );
     return Scaffold(
       backgroundColor: context.colors.scaffoldBackground,
       body: SafeArea(
@@ -61,7 +68,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 ),
               ),
               title: Text(
-                'Settings',
+                _getLocalizedText('Settings', 'Pengaturan'),
                 style: TextStyle(
                   color: context.colors.textPrimary,
                   fontSize: 24,
@@ -83,7 +90,9 @@ class _SettingScreenState extends State<SettingScreen> {
                     // Language Setting
                     Observer(
                       builder: (_) {
-                        print('SettingScreen Observer: Current language: ${languageStore.selectedLanguage}');
+                        print(
+                          'SettingScreen Observer: Current language: ${languageStore.selectedLanguage}',
+                        );
                         return LanguageSettingTile(
                           initialLanguage: languageStore.selectedLanguage,
                           onLanguageChanged: _onLanguageChanged,
@@ -94,16 +103,15 @@ class _SettingScreenState extends State<SettingScreen> {
                     const SizedBox(height: 12),
 
                     // Theme Setting
-                   /// 🔥 THEME SECTION (Reactive)
-                  Observer(
-                    builder: (_) => ThemeSettingTile(
-                      initialTheme:
-                          _themeModeToString(themeStore.themeMode),
-                      onThemeChanged: (value) {
-                        themeStore.setTheme(value);
-                      },
+                    /// 🔥 THEME SECTION (Reactive)
+                    Observer(
+                      builder: (_) => ThemeSettingTile(
+                        initialTheme: _themeModeToString(themeStore.themeMode),
+                        onThemeChanged: (value) {
+                          themeStore.setTheme(value);
+                        },
+                      ),
                     ),
-                  ),
 
                     const SizedBox(height: 12),
 
@@ -142,7 +150,7 @@ class _SettingScreenState extends State<SettingScreen> {
                               ),
                               const SizedBox(width: 14),
                               Text(
-                                'About',
+                                _getLocalizedText('About', 'Tentang'),
                                 style: TextStyle(
                                   color: context.colors.textPrimary,
                                   fontSize: 18,
@@ -158,7 +166,7 @@ class _SettingScreenState extends State<SettingScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Version',
+                                _getLocalizedText('Version', 'Versi'),
                                 style: TextStyle(
                                   color: context.colors.textSecondary,
                                   fontSize: 14,
@@ -178,7 +186,10 @@ class _SettingScreenState extends State<SettingScreen> {
 
                           // Powered by
                           Text(
-                            'Powered by The Movie Database API',
+                            _getLocalizedText(
+                              'Powered by The Movie Database API',
+                              'Dipersembahkan oleh The Movie Database API',
+                            ),
                             style: TextStyle(
                               color: context.colors.textSecondary,
                               fontSize: 13,
@@ -222,7 +233,10 @@ class _SettingScreenState extends State<SettingScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Discover Amazing Films',
+                            _getLocalizedText(
+                              'Discover Amazing Films',
+                              'Temukan Film Luar Biasa',
+                            ),
                             style: TextStyle(
                               color: context.colors.textSecondary,
                               fontSize: 14,
