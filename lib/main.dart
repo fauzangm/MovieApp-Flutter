@@ -4,10 +4,17 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:movie_app/common/app_thema.dart';
 import 'package:movie_app/core/router.dart';
 import 'package:movie_app/core/theme/theme_store_instance.dart';
+import 'package:movie_app/core/language/language_store_instance.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
+  
+  // Initialize stores to ensure they're created and loaded
+  await Future.delayed(Duration.zero); // Allow stores to initialize
+  themeStore;
+  languageStore;
+  
   runApp(const MyApp());
 }
 

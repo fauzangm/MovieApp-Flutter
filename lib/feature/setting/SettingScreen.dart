@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:go_router/go_router.dart';
 import 'package:movie_app/core/theme/theme_store_instance.dart';
+import 'package:movie_app/core/language/language_store_instance.dart';
 import 'package:movie_app/utils/ThemaHelper.dart';
 import 'components/theme_setting_tile.dart';
 import 'components/language_setting_tile.dart';
@@ -14,9 +15,6 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
-  String selectedTheme = 'dark';
-  String selectedLanguage = 'en';
-
   String _themeModeToString(ThemeMode mode) {
     switch (mode) {
       case ThemeMode.light:
@@ -29,15 +27,13 @@ class _SettingScreenState extends State<SettingScreen> {
   }
 
   void _onLanguageChanged(String language) {
-    setState(() {
-      selectedLanguage = language;
-    });
-    // TODO: Implement language change logic
-    print('Language changed to: $language');
+    print('SettingScreen: Language changed to: $language');
+    languageStore.setLanguage(language);
   }
 
   @override
   Widget build(BuildContext context) {
+    print('SettingScreen: Current language from store: ${languageStore.selectedLanguage}');
     return Scaffold(
       backgroundColor: context.colors.scaffoldBackground,
       body: SafeArea(
@@ -85,9 +81,14 @@ class _SettingScreenState extends State<SettingScreen> {
                     const SizedBox(height: 10),
 
                     // Language Setting
-                    LanguageSettingTile(
-                      initialLanguage: selectedLanguage,
-                      onLanguageChanged: _onLanguageChanged,
+                    Observer(
+                      builder: (_) {
+                        print('SettingScreen Observer: Current language: ${languageStore.selectedLanguage}');
+                        return LanguageSettingTile(
+                          initialLanguage: languageStore.selectedLanguage,
+                          onLanguageChanged: _onLanguageChanged,
+                        );
+                      },
                     ),
 
                     const SizedBox(height: 12),
