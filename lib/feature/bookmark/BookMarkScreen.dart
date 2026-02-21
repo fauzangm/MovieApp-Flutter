@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:go_router/go_router.dart';
-import 'package:movie_app/common/app_colors.dart';
 import 'package:movie_app/utils/ThemaHelper.dart';
+import 'package:movie_app/feature/bookmark/vm/bookmark_vm.dart';
+import 'package:movie_app/feature/bookmark/data/local/database/bookmark_database.dart';
+import 'package:movie_app/feature/movie/data/remote/model/MovieResponse.dart';
 import '../movie/components/movie_card.dart';
 
 class BookMarkScreen extends StatefulWidget {
@@ -12,33 +15,49 @@ class BookMarkScreen extends StatefulWidget {
 }
 
 class _BookMarkScreenState extends State<BookMarkScreen> {
-  // Sample bookmarked movies
-  final List<Map<String, dynamic>> bookmarkedMovies = const [
-    {
-      'title': 'Stellar Odyssey',
-      'year': '2024',
-      'rating': 8.9,
-      'image': 'https://picsum.photos/300/450?random=1'
-    },
-    {
-      'title': 'Dragon Fire',
-      'year': '2024',
-      'rating': 8.5,
-      'image': 'https://picsum.photos/300/450?random=2'
-    },
-    {
-      'title': 'Quantum Paradox',
-      'year': '2024',
-      'rating': 8.7,
-      'image': 'https://picsum.photos/300/450?random=3'
-    },
-    {
-      'title': 'The Last Stand',
-      'year': '2024',
-      'rating': 8.4,
-      'image': 'https://picsum.photos/300/450?random=4'
-    },
-  ];
+  final BookmarkVM _bookmarkVM = bookmarkVM; // Use global instance
+
+  @override
+  void initState() {
+    super.initState();
+    _bookmarkVM.loadBookmarks();
+  }
+
+  @override
+  void dispose() {
+    // Don't dispose global bookmarkVM here
+    super.dispose();
+  }
+
+  String _posterUrl(String? path) {
+    if (path == null || path.isEmpty) return '';
+    return 'https://image.tmdb.org/t/p/w500$path';
+  }
+
+  String _year(String date) {
+    if (date.isEmpty) return '';
+    if (date.length >= 4) return date.substring(0, 4);
+    return date;
+  }
+
+  Movie _bookmarkToMovie(Bookmark bookmark) {
+    return Movie(
+      adult: false,
+      backdropPath: bookmark.backdropPath ?? '',
+      genreIds: [],
+      id: bookmark.id,
+      originalLanguage: '',
+      originalTitle: bookmark.title,
+      overview: bookmark.overview,
+      popularity: 0.0,
+      posterPath: bookmark.posterPath ?? '',
+      releaseDate: bookmark.releaseDate,
+      title: bookmark.title,
+      video: false,
+      voteAverage: bookmark.voteAverage,
+      voteCount: bookmark.voteCount,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,42 +100,90 @@ class _BookMarkScreenState extends State<BookMarkScreen> {
             ),
 
             // Bookmarked Movies Grid
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-              sliver: SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 14,
-                  mainAxisSpacing: 18,
-                  childAspectRatio: 0.57,
-                ),
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final movie = bookmarkedMovies[index];
-                    return MovieCard(
-                      title: movie['title'],
-                      year: movie['year'],
-                      rating: movie['rating'],
-                      imageUrl: movie['image'],
-                      bookmarked: true,
-                      onBookmark: () {
-                        // Handle bookmark removal
-                        _removeFromBookmark(index);
-                      },
+            Observer(
+              builder: (_) {
+                if (_bookmarkVM.isLoading) {
+                  return const SliverToBoxAdapter(
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+
+                if (_bookmarkVM.errorMessage != null) {
+                  return SliverToBoxAdapter(
+                    child: Center(
+                      child: Text(
+                        'Error: ${_bookmarkVM.errorMessage}',
+                        style: TextStyle(color: context.colors.textPrimary),
+                      ),
+                    ),
+                  );
+                }
+
+                return StreamBuilder<List<Bookmark>>(
+                  stream: _bookmarkVM.bookmarkStream,
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const SliverToBoxAdapter(
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    }
+
+                    final bookmarks = snapshot.data!;
+                    if (bookmarks.isEmpty) {
+                      return SliverToBoxAdapter(
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(32),
+                            child: Text(
+                              'No bookmarks yet',
+                              style: TextStyle(
+                                color: context.colors.textSecondary,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+
+                    return SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                      sliver: SliverGrid(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 14,
+                          mainAxisSpacing: 18,
+                          childAspectRatio: 0.57,
+                        ),
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            final bookmark = bookmarks[index];
+                            final movie = _bookmarkToMovie(bookmark);
+                            return GestureDetector(
+                              onTap: () {
+                                context.pushNamed('detail', extra: movie);
+                              },
+                              child: MovieCard(
+                                title: bookmark.title,
+                                year: _year(bookmark.releaseDate),
+                                rating: bookmark.voteAverage,
+                                imageUrl: _posterUrl(bookmark.posterPath),
+                                movieId: bookmark.id,
+                                onBookmark: () => _bookmarkVM.toggleBookmark(movie),
+                              ),
+                            );
+                          },
+                          childCount: bookmarks.length,
+                        ),
+                      ),
                     );
                   },
-                  childCount: bookmarkedMovies.length,
-                ),
-              ),
+                );
+              },
             ),
           ],
         ),
       ),
     );
-  }
-
-  void _removeFromBookmark(int index) {
-    // TODO: Implement bookmark removal logic
-    print('Removed bookmark at index $index');
   }
 }

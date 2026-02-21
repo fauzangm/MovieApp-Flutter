@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:movie_app/utils/ThemaHelper.dart';
 import 'package:movie_app/feature/movie/data/remote/model/MovieResponse.dart';
 import 'package:movie_app/feature/movie/vm/movie_vm.dart';
+import 'package:movie_app/feature/bookmark/vm/bookmark_vm.dart';
 import 'components/cast_member_card.dart';
 import 'components/similar_movies_section.dart';
 import 'components/movie_poster_grid.dart';
@@ -17,6 +18,7 @@ class DetailMovieScreen extends StatefulWidget {
 
 class _DetailMovieScreenState extends State<DetailMovieScreen> {
   late final MovieVM _vm;
+  late final BookmarkVM _bookmarkVM = bookmarkVM; // Use global instance
   late final int _movieId;
 
   @override
@@ -32,11 +34,13 @@ class _DetailMovieScreenState extends State<DetailMovieScreen> {
     _vm.fetchMovieDetail(_movieId);
     _vm.fetchSimilarMovies(_movieId);
     _vm.fetchMovieCast(_movieId);
+    _bookmarkVM.loadBookmarks(); // Load bookmarks to ensure state is current
   }
 
   @override
   void dispose() {
     _vm.dispose();
+    // Don't dispose global bookmarkVM here
     super.dispose();
   }
 
@@ -83,15 +87,42 @@ class _DetailMovieScreenState extends State<DetailMovieScreen> {
                   ),
                 ),
                 actions: [
-                  Container(
-                    margin: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: context.colors.bookmarkActive,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.bookmark, color: Colors.black),
-                      onPressed: () {},
+                  Observer(
+                    builder: (_) => Container(
+                      margin: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: _bookmarkVM.bookmarkedIds.contains(_movieId)
+                            ? context.colors.bookmarkActive
+                            : context.colors.surface,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.bookmark,
+                          color: _bookmarkVM.bookmarkedIds.contains(_movieId)
+                              ? Colors.black
+                              : context.colors.textPrimary,
+                        ),
+                        onPressed: () async {
+                          final movie = Movie(
+                            adult: false,
+                            backdropPath: detail.backdropPath ?? '',
+                            genreIds: [],
+                            id: _movieId,
+                            originalLanguage: '',
+                            originalTitle: detail.title,
+                            overview: detail.overview,
+                            popularity: 0.0,
+                            posterPath: detail.posterPath ?? '',
+                            releaseDate: detail.releaseDate,
+                            title: detail.title,
+                            video: false,
+                            voteAverage: detail.voteAverage,
+                            voteCount: detail.voteCount,
+                          );
+                          await _bookmarkVM.toggleBookmark(movie);
+                        },
+                      ),
                     ),
                   ),
                 ],

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:movie_app/common/app_colors.dart';
 import '../../components/movie_card.dart';
 
 class SimilarMoviesSection extends StatelessWidget {
@@ -28,7 +27,7 @@ class SimilarMoviesSection extends StatelessWidget {
                 year: movie['year'],
                 rating: movie['rating'],
                 imageUrl: movie['image'],
-                bookmarked: false,
+                movieId: 0, // Similar movies don't have real IDs, use 0 as placeholder
               ),
             ),
           );

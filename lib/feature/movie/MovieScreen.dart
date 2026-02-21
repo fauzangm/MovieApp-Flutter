@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:movie_app/core/theme/theme_store_instance.dart';
 import 'package:movie_app/feature/movie/data/remote/model/MovieResponse.dart';
 import 'package:movie_app/feature/movie/vm/movie_vm.dart';
+import 'package:movie_app/feature/bookmark/vm/bookmark_vm.dart';
 import 'package:movie_app/utils/ThemaHelper.dart';
 import 'components/movie_card.dart';
 
@@ -19,6 +20,7 @@ class _MovieScreenState extends State<MovieScreen> {
   static const String _tmdbPosterBaseUrl = 'https://image.tmdb.org/t/p/w500';
 
   final MovieVM _vm = MovieVM();
+  final BookmarkVM _bookmarkVM = bookmarkVM; // Use global instance
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
 
@@ -34,6 +36,7 @@ class _MovieScreenState extends State<MovieScreen> {
     super.initState();
     _selectedChip = _selectedType; // set chip aktif awal
     _vm.fetchMovies(type: _selectedType);
+    _bookmarkVM.loadBookmarks();
 
     _scrollController.addListener(() {
       if (!_scrollController.hasClients) return;
@@ -306,64 +309,66 @@ class _MovieScreenState extends State<MovieScreen> {
               // Grid of movies
               Expanded(
                 child: Observer(
-                  builder: (_) {
-                    return StreamBuilder<List<Movie>>(
-                      stream: _vm.movieStream,
-                      builder: (context, snapshot) {
-                        final movies = snapshot.data ?? const [];
+                  builder: (_) => StreamBuilder<List<Movie>>(
+                    stream: _vm.movieStream,
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
 
-                        if (_vm.errorMessage != null && movies.isEmpty) {
-                          return Center(
-                            child: Text(
-                              _vm.errorMessage!,
-                              style: TextStyle(
-                                color: context.colors.textPrimary,
-                              ),
+                      final movies = snapshot.data!;
+                      if (movies.isEmpty && !_vm.isLoading) {
+                        return Center(
+                          child: Text(
+                            'No movies found',
+                            style: TextStyle(
+                              color: context.colors.textPrimary,
+                            ),
+                          ),
+                        );
+                      }
+
+                      if (_vm.isLoading && movies.isEmpty) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+
+                      return GridView.builder(
+                        controller: _scrollController,
+                        itemCount: movies.length + (_vm.isLoading ? 1 : 0),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 14,
+                              mainAxisSpacing: 18,
+                              childAspectRatio: 0.57,
+                            ),
+                        itemBuilder: (context, index) {
+                          if (index >= movies.length) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+
+                          final movie = movies[index];
+                          return GestureDetector(
+                            onTap: () {
+                              context.pushNamed('detail', extra: movie);
+                            },
+                            child: MovieCard(
+                              title: movie.title,
+                              year: _year(movie),
+                              rating: movie.voteAverage,
+                              imageUrl: _posterUrl(movie),
+                              movieId: movie.id,
+                              onBookmark: () => _bookmarkVM.toggleBookmark(movie),
                             ),
                           );
-                        }
-
-                        if (_vm.isLoading && movies.isEmpty) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-
-                        return GridView.builder(
-                          controller: _scrollController,
-                          itemCount: movies.length + (_vm.isLoading ? 1 : 0),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                crossAxisSpacing: 14,
-                                mainAxisSpacing: 18,
-                                childAspectRatio: 0.57,
-                              ),
-                          itemBuilder: (context, index) {
-                            if (index >= movies.length) {
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            }
-
-                            final movie = movies[index];
-                            return GestureDetector(
-                              onTap: () {
-                                context.pushNamed('detail', extra: movie);
-                              },
-                              child: MovieCard(
-                                title: movie.title,
-                                year: _year(movie),
-                                rating: movie.voteAverage,
-                                imageUrl: _posterUrl(movie),
-                                bookmarked: false,
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    );
-                  },
+                        },
+                      );
+                    },
+                  ),
                 ),
               ),
             ],
