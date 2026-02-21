@@ -41,20 +41,19 @@ class _MovieCardState extends State<MovieCard> {
                 fit: StackFit.expand,
                 children: [
                   // Image
-                  Image.network(
-                    widget.imageUrl,
-                    fit: BoxFit.cover,
-                  ),
-
+                  Image.network(widget.imageUrl, fit: BoxFit.cover),
                   // Top-right bookmark
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: BookmarkButton(
-                      active: bookmarkVM.bookmarkedIds.contains(widget.movieId),
-                      onTap: widget.onBookmark,
+                  if (widget.onBookmark != null)
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: BookmarkButton(
+                        active: bookmarkVM.bookmarkedIds.contains(
+                          widget.movieId,
+                        ),
+                        onTap: widget.onBookmark,
+                      ),
                     ),
-                  ),
 
                   // Bottom-left rating
                   Positioned(
@@ -69,7 +68,7 @@ class _MovieCardState extends State<MovieCard> {
           const SizedBox(height: 10),
           Text(
             widget.title,
-            style:  TextStyle(
+            style: TextStyle(
               color: context.colors.textPrimary,
               fontSize: 16,
               fontWeight: FontWeight.w700,
@@ -78,10 +77,7 @@ class _MovieCardState extends State<MovieCard> {
           const SizedBox(height: 4),
           Text(
             widget.year,
-            style:  TextStyle(
-              color: context.colors.textSecondary,
-              fontSize: 13,
-            ),
+            style: TextStyle(color: context.colors.textSecondary, fontSize: 13),
           ),
         ],
       ),

@@ -51,13 +51,13 @@ mixin _$BookmarkVM on _BookmarkVM, Store {
   );
 
   @override
-  Set<int> get bookmarkedIds {
+  ObservableSet<int> get bookmarkedIds {
     _$bookmarkedIdsAtom.reportRead();
     return super.bookmarkedIds;
   }
 
   @override
-  set bookmarkedIds(Set<int> value) {
+  set bookmarkedIds(ObservableSet<int> value) {
     _$bookmarkedIdsAtom.reportWrite(value, super.bookmarkedIds, () {
       super.bookmarkedIds = value;
     });

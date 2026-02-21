@@ -28,7 +28,7 @@ abstract class _BookmarkVM with Store {
   String? errorMessage;
 
   @observable
-  Set<int> bookmarkedIds = {};
+  ObservableSet<int> bookmarkedIds = ObservableSet<int>();
 
   @action
   Future<void> loadBookmarks() async {
